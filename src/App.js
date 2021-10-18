@@ -13,11 +13,15 @@ import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
 import InitialRequest from "./components/InitialRequest"
+import RequestList from "./components/RequestList"
+import Task from "./components/Task"
 
 
 const App = () => {
   const [showModeratorBoard, setShowModeratorBoard] = useState(false);
+  const [showTask, setShowTask] = useState(false)
   const [showAdminBoard, setShowAdminBoard] = useState(false);
+  const [showInitial, setShowInitial] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
 
   useEffect(() => {
@@ -27,6 +31,8 @@ const App = () => {
       setCurrentUser(user);
       setShowModeratorBoard(user.role.includes("ROLE_MODERATOR"));
       setShowAdminBoard(user.role.includes("ROLE_ADMIN"));
+      setShowInitial(user.role === "CustomerOfficer")
+      setShowTask(user.role === 'ServiceManager' || 'ProductionManager')
     }
   }, []);
 
@@ -46,16 +52,19 @@ const App = () => {
               Home
             </Link>
           </li>
+
+          {showInitial && (
           <li className="nav-item">
             <Link to={"/initial"} className="nav-link">
-              Initial
+              Request
             </Link>
           </li>
+          )}
 
-          {showModeratorBoard && (
+          {showTask && (
             <li className="nav-item">
-              <Link to={"/mod"} className="nav-link">
-                Moderator Board
+              <Link to={"/task"} className="nav-link">
+                Task
               </Link>
             </li>
           )}
@@ -76,14 +85,17 @@ const App = () => {
             </li>
           )}
         </div>
-
-        {currentUser ? (
+        {(currentUser&& currentUser.role !== 'CustomerOfficer' && !showTask) && (
           <div className="navbar-nav ml-auto">
             <li className="nav-item">
-              <Link to={"/profile"} className="nav-link">
-                {currentUser.role}
+              <Link to={"/list"} className="nav-link">
+                List
               </Link>
             </li>
+          </div>
+        )}
+        {(currentUser)? (
+          <div className="navbar-nav ml-auto">
             <li className="nav-item">
               <a href="/login" className="nav-link" onClick={logOut}>
                 Logout
@@ -113,6 +125,8 @@ const App = () => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/initial" component={InitialRequest} />
+          <Route exact path="/list" component={RequestList} />
+          <Route exact path="/task" component={Task} />
           <Route path="/user" component={BoardUser} />
           <Route path="/mod" component={BoardModerator} />
           <Route path="/admin" component={BoardAdmin} />

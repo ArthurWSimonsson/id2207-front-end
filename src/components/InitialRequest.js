@@ -3,6 +3,9 @@ import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 
+import AuthService from "../services/auth.service";
+import RequestService from "../services/request.service";
+
 const required = (value) => {
     if (!value) {
       return (
@@ -14,22 +17,33 @@ const required = (value) => {
   };
 
 
-const InitialRequest = () => {
+const InitialRequest = (props) => {
     const form = useRef();
     const checkBtn = useRef();
 
-    const [recordNumber, setRecordNumber] = useState("");
-    const [clientName, setClientName] = useState("");
-    const [eventType, setEventType] = useState("");
-    const [attendees, setAttendees] = useState("");
-    const [budget, setBudget] = useState("");
-    const [decorations, setDecorations] = useState(false);
-    const [parties, setParties] = useState(false);
-    const [photos, setPhotos] = useState(false);
-    const [food, setFood] = useState(false);
-    const [drinks, setDrinks] = useState(false);
+    const [recordNumber, setRecordNumber] = useState(props.location.state? props.location.state.record.recordNumber: "number");
+    const [clientName, setClientName] = useState(props.location.state? props.location.state.record.clientName: "name");
+    const [eventType, setEventType] = useState(props.location.state? props.location.state.record.eventType: "type");
+    const [attendees, setAttendees] = useState(props.location.state? props.location.state.record.attendees: 1);
+    const [budget, setBudget] = useState(props.location.state? props.location.state.record.budget: "1000 SEK");
+    const [decorations, setDecorations] = useState(props.location.state? props.location.state.record.decorations: false);
+    const [parties, setParties] = useState(props.location.state? props.location.state.record.parties: false);
+    const [photos, setPhotos] = useState(props.location.state? props.location.state.record.photos: false);
+    const [food, setFood] = useState(props.location.state? props.location.state.record.food: false);
+    const [drinks, setDrinks] = useState(props.location.state? props.location.state.record.drinks: false);
     
     const [message, setMessage] = useState("");
+    const [currentUser, setCurrentUser] = useState(undefined);
+
+    
+
+    useEffect(() => {
+        const user = AuthService.getCurrentUser();
+        if(user) {
+            setCurrentUser(user);
+        }
+    }, [])
+
 
     const onChangeRecordNumber = (e) => {
         const recordNumber = e.target.value;
@@ -49,28 +63,23 @@ const InitialRequest = () => {
     }
 
     const onChangeDecorations = (e) => {
-        const decorations = e.target.value;
-        setDecorations(decorations);
+        setDecorations(!decorations);
     }
 
     const onChangeParties = (e) => {
-        const parties = e.target.value;
-        setParties(parties);
+        setParties(!parties);
     }
 
     const onChangePhotos = (e) => {
-        const photos = e.target.value;
-        setPhotos(photos);
+        setPhotos(!photos);
     }
 
     const onChangeFood = (e) => {
-        const food = e.target.value;
-        setFood(food);
+        setFood(!food);
     }
 
     const onChangeDrinks = (e) => {
-        const drinks = e.target.value;
-        setDrinks(drinks);
+        setDrinks(!drinks);
     }
 
     const onChangeBudget = (e) => {
@@ -78,11 +87,27 @@ const InitialRequest = () => {
         setBudget(budget);
     }
 
-    const handleLogin = () => {
+    let button;
+
+    if (currentUser && currentUser.role == 'CustomerOfficer') {
+        button =                     
+            <button className="btn btn-primary btn-block">
+                <span>Submit</span>
+            </button>
+    }
+    else {
+        button =                     
+        <button className="btn btn-primary btn-block">
+            <span>Update</span>
+        </button>
+    }
+
+    const handleLogin = (e) => {
         form.current.validateAll();
 
-        if (checkBtn.current.context._errors.length === 0) {
-            AuthService.login(username, password).then(
+        if (currentUser.role == 'CustomerOfficer' && checkBtn.current.context._errors.length === 0) {
+            RequestService.storeInitialRequest(recordNumber, clientName, eventType, attendees, 
+                budget, decorations, parties, photos, food, drinks, currentUser.role).then(
               () => {
                 props.history.push("/initial");
                 window.location.reload();
@@ -95,17 +120,37 @@ const InitialRequest = () => {
                   error.message ||
                   error.toString();
       
-                setLoading(false);
                 setMessage(resMessage);
               }
             );
-          } else {
-            setLoading(false);
           }
+          else if ((currentUser.role == 'SeniorCustomerOfficer' || 'FinancialManager' || 'AdministrationManager') && checkBtn.current.context._errors.length === 0) {
+            RequestService.updateInitialRequest(props.location.state.record._id, recordNumber, clientName, eventType, attendees, 
+                budget, decorations, parties, photos, food, drinks, currentUser.role).then(
+              () => {
+                console.log('test');
+                props.history.push("/list");
+                window.location.reload();
+              },
+              (error) => {
+                const resMessage =
+                  (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                  error.message ||
+                  error.toString();
+
+                  console.log('error', error)
+      
+                setMessage(resMessage);
+              }
+            );
+        }
     }
 
     return(
-        <div>
+        <div className='container'>
+            <h4 class="mb-3">Initial Request</h4>
             <Form onSubmit={handleLogin} ref={form}>
                 <div className="form-group">
                     <label htmlFor="recordNumber">Record Number</label>
@@ -199,10 +244,9 @@ const InitialRequest = () => {
                         validations={[required]}
                     />
                 </div>
+                
                 <div className="form-group">
-                    <button className="btn btn-primary btn-block">
-                        <span>Submit</span>
-                    </button>
+                    {button}
                 </div>
                 {message && (
                     <div className="form-group">

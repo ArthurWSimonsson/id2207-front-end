@@ -45,7 +45,11 @@ const Login = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
         () => {
-          props.history.push("/initial");
+          console.log('login');
+          if (username == 'CustomerOfficer')
+            props.history.push("/initial");
+          else if (username == 'SeniorCustomerOfficer' || 'FinancialManager' || 'AdministrationManager')
+            props.history.push("/list");
           window.location.reload();
         },
         (error) => {
