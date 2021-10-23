@@ -46,10 +46,19 @@ const Login = (props) => {
       AuthService.login(username, password).then(
         () => {
           console.log('login');
-          if (username == 'CustomerOfficer')
+          if (username === 'CustomerOfficer')
             props.history.push("/initial");
-          else if (username == 'SeniorCustomerOfficer' || 'FinancialManager' || 'AdministrationManager')
+          else if (username === 'SeniorCustomerOfficer' ||
+                   username ===  'FinancialManager' || 
+                   username === 'AdministrationManager')
             props.history.push("/list");
+          else if (username === 'ServiceManager' ||
+                   username === 'ProductionManager' ||
+                   username === 'Chef' ||
+                   username === 'Decorations')
+            props.history.push('/taskList')
+          else if (username === 'HR')
+            props.history.push('/recruitmentList') 
           window.location.reload();
         },
         (error) => {

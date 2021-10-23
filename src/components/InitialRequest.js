@@ -103,9 +103,10 @@ const InitialRequest = (props) => {
     }
 
     const handleLogin = (e) => {
+        e.preventDefault();
         form.current.validateAll();
 
-        if (currentUser.role == 'CustomerOfficer' && checkBtn.current.context._errors.length === 0) {
+        if (currentUser.role === 'CustomerOfficer' && checkBtn.current.context._errors.length === 0) {
             RequestService.storeInitialRequest(recordNumber, clientName, eventType, attendees, 
                 budget, decorations, parties, photos, food, drinks, currentUser.role).then(
               () => {
@@ -114,33 +115,39 @@ const InitialRequest = (props) => {
               },
               (error) => {
                 const resMessage =
-                  (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                  error.message ||
-                  error.toString();
-      
+                //  (error.response &&
+                //    error.response.data &&
+                //    error.response.data.message) ||
+                //  error.message ||
+                
+                    error.response.data;
+                console.log(error.response);
                 setMessage(resMessage);
               }
             );
           }
-          else if ((currentUser.role == 'SeniorCustomerOfficer' || 'FinancialManager' || 'AdministrationManager') && checkBtn.current.context._errors.length === 0) {
+          else if ((currentUser.role === 'SeniorCustomerOfficer' || 
+                    currentUser.role === 'FinancialManager' || 
+                    currentUser.role === 'AdministrationManager') && 
+                    checkBtn.current.context._errors.length === 0) {
+            console.log('testing')
+            props.history.push("/list");
+            window.location.reload();
             RequestService.updateInitialRequest(props.location.state.record._id, recordNumber, clientName, eventType, attendees, 
                 budget, decorations, parties, photos, food, drinks, currentUser.role).then(
               () => {
-                console.log('test');
                 props.history.push("/list");
                 window.location.reload();
               },
               (error) => {
                 const resMessage =
-                  (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                  error.message ||
-                  error.toString();
+                //  (error.response &&
+                //    error.response.data &&
+                //    error.response.data.message) ||
+                //  error.message ||
+                error.message;
 
-                  console.log('error', error)
+                console.log('error', error)
       
                 setMessage(resMessage);
               }
@@ -150,7 +157,7 @@ const InitialRequest = (props) => {
 
     return(
         <div className='container'>
-            <h4 class="mb-3">Initial Request</h4>
+            <h4 className="mb-3">Initial Request</h4>
             <Form onSubmit={handleLogin} ref={form}>
                 <div className="form-group">
                     <label htmlFor="recordNumber">Record Number</label>

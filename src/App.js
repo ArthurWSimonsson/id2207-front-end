@@ -8,21 +8,27 @@ import AuthService from "./services/auth.service";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
-import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
-import InitialRequest from "./components/InitialRequest"
-import RequestList from "./components/RequestList"
-import Task from "./components/Task"
-
+import InitialRequest from "./components/InitialRequest";
+import RequestList from "./components/RequestList";
+import Task from "./components/Task";
+import TaskList from "./components/TaskList";
+import TaskView from "./components/TaskView";
+import RecruitmentRequest from "./components/RecruitmentRequest";
+import RecruitmentList from "./components/RecruitmentList";
+import RecruitmentView from "./components/RecruitmentView";
 
 const App = () => {
   const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-  const [showTask, setShowTask] = useState(false)
+  const [showTask, setShowTask] = useState(false);
+  const [showTaskList, setShowTaskList] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [showInitial, setShowInitial] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [showList, setShowList] = useState(false)
+  const [showHR, setShowHR] = useState(false);
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -32,7 +38,16 @@ const App = () => {
       setShowModeratorBoard(user.role.includes("ROLE_MODERATOR"));
       setShowAdminBoard(user.role.includes("ROLE_ADMIN"));
       setShowInitial(user.role === "CustomerOfficer")
-      setShowTask(user.role === 'ServiceManager' || 'ProductionManager')
+      setShowTask(user.role === 'ServiceManager' || 
+                  user.role === 'ProductionManager')
+      setShowTaskList(user.role === 'ServiceManager' || 
+                      user.role === 'ProductionManager' ||
+                      user.role === 'Chef' ||
+                      user.role === 'Decorations')
+      setShowList(user.role === 'FinancialManager'     || 
+                  user.role === 'AdministrationManager' || 
+                  user.role === 'SeniorCustomerOfficer')
+      setShowHR(user.role === 'HR');
     }
   }, []);
 
@@ -47,12 +62,6 @@ const App = () => {
           SEP
         </Link>
         <div className="navbar-nav mr-auto">
-          <li className="nav-item">
-            <Link to={"/home"} className="nav-link">
-              Home
-            </Link>
-          </li>
-
           {showInitial && (
           <li className="nav-item">
             <Link to={"/initial"} className="nav-link">
@@ -64,7 +73,14 @@ const App = () => {
           {showTask && (
             <li className="nav-item">
               <Link to={"/task"} className="nav-link">
-                Task
+                New Task
+              </Link>
+            </li>
+          )}
+          {showTaskList && (
+            <li className="nav-item">
+              <Link to={"/taskList"} className="nav-link">
+                Task List
               </Link>
             </li>
           )}
@@ -77,15 +93,22 @@ const App = () => {
             </li>
           )}
 
-          {currentUser && (
+          {showTask && (
             <li className="nav-item">
-              <Link to={"/user"} className="nav-link">
-                User
+              <Link to={"/recruitmentRequest"} className="nav-link">
+                Recruitment Request
+              </Link>
+            </li>
+          )}
+          {showHR && (
+            <li className="nav-item">
+              <Link to={"/recruitmentList"} className="nav-link">
+                Recruitment List
               </Link>
             </li>
           )}
         </div>
-        {(currentUser&& currentUser.role !== 'CustomerOfficer' && !showTask) && (
+        {showList && (
           <div className="navbar-nav ml-auto">
             <li className="nav-item">
               <Link to={"/list"} className="nav-link">
@@ -117,6 +140,12 @@ const App = () => {
             </li>
           </div>
         )}
+        {currentUser && (
+        <div>
+          <span className="badge badge-info">Signed is as: {currentUser.role}</span>
+        </div>
+        )}
+
       </nav>
 
       <div className="container mt-3">
@@ -127,6 +156,11 @@ const App = () => {
           <Route exact path="/initial" component={InitialRequest} />
           <Route exact path="/list" component={RequestList} />
           <Route exact path="/task" component={Task} />
+          <Route exact path="/taskList" component={TaskList} />
+          <Route exact path="/viewTask" component={TaskView} />
+          <Route exact path="/recruitmentRequest" component={RecruitmentRequest} />
+          <Route exact path="/recruitmentList" component={RecruitmentList} />
+          <Route exact path="/recruitmentView" component={RecruitmentView} />
           <Route path="/user" component={BoardUser} />
           <Route path="/mod" component={BoardModerator} />
           <Route path="/admin" component={BoardAdmin} />
