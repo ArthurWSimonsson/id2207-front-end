@@ -31,6 +31,7 @@ const InitialRequest = (props) => {
     const [photos, setPhotos] = useState(props.location.state? props.location.state.record.photos: false);
     const [food, setFood] = useState(props.location.state? props.location.state.record.food: false);
     const [drinks, setDrinks] = useState(props.location.state? props.location.state.record.drinks: false);
+    const [responsible, setResponsible] = useState(props.location.state? props.location.state.record.currentResponsible: false);
     
     const [message, setMessage] = useState("");
     const [currentUser, setCurrentUser] = useState(undefined);
@@ -97,7 +98,10 @@ const InitialRequest = (props) => {
 
     let button;
 
-    if (currentUser && currentUser.role == 'CustomerOfficer') {
+    if (responsible === 'AdministrationManager') {
+        button = <div>Approved</div>
+    }
+    else if (currentUser && currentUser.role == 'CustomerOfficer') {
         button =                     
             <button className="btn btn-primary btn-block">
                 <span>Submit</span>

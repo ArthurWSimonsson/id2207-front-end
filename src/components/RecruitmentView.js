@@ -37,9 +37,14 @@ const RecruitmentView = (props) => {
         );
     }
 
+    const statusChange = (e) => {
+        const status = e.target.value;
+        setStatus(status);
+    }
+
     let content;
 
-    if (user && user.role === 'FinancialManager') {
+    if (user && user.role === 'HR') {
         content =             
             <Form onSubmit={handleSubmit}>
                 <select className='form-select' value={status} onChange={statusChange}>
@@ -58,11 +63,6 @@ const RecruitmentView = (props) => {
                     <li className ='list-group-item'>{status}</li>
                   </ul>                 
         }
-
-    const statusChange = (e) => {
-        const status = e.target.value;
-        setStatus(status);
-    }
 
     return(
         <div className='container'>

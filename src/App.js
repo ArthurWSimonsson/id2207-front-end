@@ -18,13 +18,12 @@ import RecruitmentList from "./components/RecruitmentList";
 import RecruitmentView from "./components/RecruitmentView";
 import FinancialRequest from "./components/FinancialRequest";
 import FinancialList from "./components/FinancialList";
-import FinancialView from "./components/FinancialView"
+import FinancialView from "./components/FinancialView";
+import ApprovedRequests from "./components/ApprovedRequests";
 
 const App = () => {
-  const [showModeratorBoard, setShowModeratorBoard] = useState(false);
   const [showTask, setShowTask] = useState(false);
   const [showTaskList, setShowTaskList] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [showInitial, setShowInitial] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [showList, setShowList] = useState(false)
@@ -85,14 +84,6 @@ const App = () => {
             </li>
           )}
 
-          {showAdminBoard && (
-            <li className="nav-item">
-              <Link to={"/admin"} className="nav-link">
-                Admin Board
-              </Link>
-            </li>
-          )}
-
           {showTask && (
             <li className="nav-item">
               <Link to={"/recruitmentRequest"} className="nav-link">
@@ -123,13 +114,23 @@ const App = () => {
           )}
         </div>
         {showList && (
-          <div className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link to={"/list"} className="nav-link">
-                Request List
-              </Link>
-            </li>
+          <div className='navbar-nav ml-auto'>
+            <div className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link to={"/list"} className="nav-link">
+                  Request List
+                </Link>
+              </li>
+            </div>
+            <div className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link to={"/approvedRequests"} className="nav-link">
+                  Approved Requests
+                </Link>
+              </li>
+            </div>
           </div>
+          
         )}
         {(currentUser)? (
           <div className="navbar-nav ml-auto">
@@ -163,6 +164,7 @@ const App = () => {
           <Route exact path="/register" component={Register} />
           <Route exact path="/initial" component={InitialRequest} />
           <Route exact path="/list" component={RequestList} />
+          <Route exact path="/approvedRequests" component={ApprovedRequests} />
           <Route exact path="/task" component={Task} />
           <Route exact path="/taskList" component={TaskList} />
           <Route exact path="/viewTask" component={TaskView} />
