@@ -87,6 +87,14 @@ const InitialRequest = (props) => {
         setBudget(budget);
     }
 
+    const rejectHandle = async (e) => {
+        e.preventDefault();
+        console.log('reject')
+        RequestService.deleteInitialRequest(recordNumber);
+        props.history.push('/list');
+        window.location.reload();
+    }
+
     let button;
 
     if (currentUser && currentUser.role == 'CustomerOfficer') {
@@ -95,14 +103,28 @@ const InitialRequest = (props) => {
                 <span>Submit</span>
             </button>
     }
+    else if (currentUser && (currentUser.role === 'SeniorCustomerOfficer' ||
+                             currentUser.role === 'AdministrationManager')){
+        button =              
+        <div>
+            <button className="btn btn-primary btn-block" type='submit'>
+                <span>Update</span>
+            </button>
+            <button id='reject-button' className="btn btn-danger btn-block float-end" onClick={rejectHandle}>
+                <span>Reject</span>
+            </button>
+        </div>       
+    }
     else {
-        button =                     
-        <button className="btn btn-primary btn-block">
-            <span>Update</span>
-        </button>
+        button =              
+        <div>
+            <button className="btn btn-primary btn-block" type='submit'>
+                <span>Update</span>
+            </button>
+        </div> 
     }
 
-    const handleLogin = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         form.current.validateAll();
 
@@ -115,10 +137,6 @@ const InitialRequest = (props) => {
               },
               (error) => {
                 const resMessage =
-                //  (error.response &&
-                //    error.response.data &&
-                //    error.response.data.message) ||
-                //  error.message ||
                 
                     error.response.data;
                 console.log(error.response);
@@ -141,10 +159,6 @@ const InitialRequest = (props) => {
               },
               (error) => {
                 const resMessage =
-                //  (error.response &&
-                //    error.response.data &&
-                //    error.response.data.message) ||
-                //  error.message ||
                 error.message;
 
                 console.log('error', error)
@@ -158,7 +172,7 @@ const InitialRequest = (props) => {
     return(
         <div className='container'>
             <h4 className="mb-3">Initial Request</h4>
-            <Form onSubmit={handleLogin} ref={form}>
+            <Form onSubmit={handleSubmit} ref={form}>
                 <div className="form-group">
                     <label htmlFor="recordNumber">Record Number</label>
                     <Input

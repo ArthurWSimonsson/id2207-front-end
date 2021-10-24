@@ -8,9 +8,6 @@ import AuthService from "./services/auth.service";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
-import BoardUser from "./components/BoardUser";
-import BoardModerator from "./components/BoardModerator";
-import BoardAdmin from "./components/BoardAdmin";
 import InitialRequest from "./components/InitialRequest";
 import RequestList from "./components/RequestList";
 import Task from "./components/Task";
@@ -19,6 +16,9 @@ import TaskView from "./components/TaskView";
 import RecruitmentRequest from "./components/RecruitmentRequest";
 import RecruitmentList from "./components/RecruitmentList";
 import RecruitmentView from "./components/RecruitmentView";
+import FinancialRequest from "./components/FinancialRequest";
+import FinancialList from "./components/FinancialList";
+import FinancialView from "./components/FinancialView"
 
 const App = () => {
   const [showModeratorBoard, setShowModeratorBoard] = useState(false);
@@ -29,14 +29,13 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [showList, setShowList] = useState(false)
   const [showHR, setShowHR] = useState(false);
+  const [showFM, setShowFM] = useState(false)
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
 
     if (user) {
       setCurrentUser(user);
-      setShowModeratorBoard(user.role.includes("ROLE_MODERATOR"));
-      setShowAdminBoard(user.role.includes("ROLE_ADMIN"));
       setShowInitial(user.role === "CustomerOfficer")
       setShowTask(user.role === 'ServiceManager' || 
                   user.role === 'ProductionManager')
@@ -48,6 +47,7 @@ const App = () => {
                   user.role === 'AdministrationManager' || 
                   user.role === 'SeniorCustomerOfficer')
       setShowHR(user.role === 'HR');
+      setShowFM(user.role === 'FinancialManager');
     }
   }, []);
 
@@ -100,10 +100,24 @@ const App = () => {
               </Link>
             </li>
           )}
-          {showHR && (
+          {showTask && (
+            <li className="nav-item">
+              <Link to={"/financialRequest"} className="nav-link">
+                Financial Request
+              </Link>
+            </li>
+          )}
+          {(showTask || showHR) && (
             <li className="nav-item">
               <Link to={"/recruitmentList"} className="nav-link">
                 Recruitment List
+              </Link>
+            </li>
+          )}
+          {(showTask ||showFM) && (
+            <li className="nav-item">
+              <Link to={"/financialList"} className="nav-link">
+                Financial Request List
               </Link>
             </li>
           )}
@@ -112,7 +126,7 @@ const App = () => {
           <div className="navbar-nav ml-auto">
             <li className="nav-item">
               <Link to={"/list"} className="nav-link">
-                List
+                Request List
               </Link>
             </li>
           </div>
@@ -130,12 +144,6 @@ const App = () => {
             <li className="nav-item">
               <Link to={"/login"} className="nav-link">
                 Login
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to={"/register"} className="nav-link">
-                Sign Up
               </Link>
             </li>
           </div>
@@ -161,9 +169,9 @@ const App = () => {
           <Route exact path="/recruitmentRequest" component={RecruitmentRequest} />
           <Route exact path="/recruitmentList" component={RecruitmentList} />
           <Route exact path="/recruitmentView" component={RecruitmentView} />
-          <Route path="/user" component={BoardUser} />
-          <Route path="/mod" component={BoardModerator} />
-          <Route path="/admin" component={BoardAdmin} />
+          <Route exact path="/financialRequest" component={FinancialRequest} />
+          <Route exact path="/financialList" component={FinancialList} />
+          <Route exact path="/financialView" component={FinancialView} />
         </Switch>
       </div>
     </div>

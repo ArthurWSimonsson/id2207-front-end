@@ -17,7 +17,15 @@ const getRecruitmentList = () => {
             return response.data})
 }
 
+const changeRecruitmentStatus = (id, status) => {
+    const data = {id, status}
+    return axios.post(API_URL + 'changeRecruitmentStatus', data, {headers: authHeader()})
+        .then((response) => {
+            return response.data})
+}
+
 export default {
     storeRecruitmentRequest,
     getRecruitmentList,
+    changeRecruitmentStatus,
 };

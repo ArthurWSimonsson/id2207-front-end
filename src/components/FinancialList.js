@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 
-import RecruitmentService from "../services/recruitment.service";
+import FinancialService from "../services/financial.service";
 
-const RecruitmentList = (props) => {
-    const [recruitmentList, setRecruitmentList] = useState([]);
+const FinancialList = (props) => {
+    const [financialList, setFinancialList] = useState([]);
 
-    useEffect (async() => {
-        const list = await RecruitmentService.getRecruitmentList();
-        setRecruitmentList(list);
-    },[]) 
+    useEffect(async() => {
+        const list = await FinancialService.getFinancialList();
+        setFinancialList(list);
+    },[]);
 
     return(
-        <div className='container'>
+        <div>
             <ul className="list-group">
-            {recruitmentList.map((item) => {
+            {financialList.map((item) => {
                 let span;
                 if (item.status === 'unhandled')
                     span = <span className="badge bg-secondary float-end">{item.status}</span>;
@@ -26,8 +26,8 @@ const RecruitmentList = (props) => {
                     <div>
                         <li className="list-group-item">
                             <Link className="link-secondary text-decoration-none" 
-                                to={{pathname :'/recruitmentView', state :{recruitment: item}}}>
-                                    {item.department} Title: {item.title}
+                                to={{pathname :'/financialView', state :{financial: item}}}>
+                                    {item.department}
                             </Link>
                             {span}
                         </li>
@@ -39,4 +39,4 @@ const RecruitmentList = (props) => {
     )
 }
 
-export default RecruitmentList;
+export default FinancialList;

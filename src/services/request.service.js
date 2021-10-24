@@ -30,8 +30,17 @@ const updateInitialRequest = (id, recordNumber, clientName, eventType, attendees
 }
 
 
+const deleteInitialRequest = (recordNumber) => {
+    const data = {recordNumber};
+    return axios.post(API_URL + 'deleteInitialRequest', data, {headers: authHeader()})
+        .then((response) => {
+            return response.data
+        })
+}
+
 export default {
     storeInitialRequest,
     getInitialRequestList,
     updateInitialRequest,
+    deleteInitialRequest,
 };

@@ -14,7 +14,7 @@ const TaskView = (props) => {
     const [notes, setNotes] = useState([]);
     const [task, setTask] = useState(undefined);
 
-    useEffect ( async() => {
+    useEffect (async() => {
         setNotes(props.location.state.task.notes);
         setRecordNumber(props.location.state.task.recordNumber);
         setPriority(props.location.state.task.priority);
